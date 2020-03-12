@@ -92,6 +92,8 @@ class DailyUpdatePipeline(object):
             #     return
             self.redis.hset("articles_h", title, article_id)
 
+        print(article_id)
+
         # print(url, article_id)
         sql_chapter = "insert into articles_chapter(article_id, chapter_id, chapter_name, updated_at, chapter_sort) " \
                       "values(%s, %s, %s, %s, %s)"
