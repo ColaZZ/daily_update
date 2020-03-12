@@ -56,7 +56,7 @@ class DailyUpdatePipeline(object):
 
         chapter_id = int(chapter_url_base[:-5])
         # 爬虫更新时间
-        updated_at = time.strftime("%Y-%m-%d", time.localtime())
+        updated_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
         # update/insert articles表
         if not self.redis.hexists("articels_h", title):
