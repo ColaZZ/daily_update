@@ -25,7 +25,7 @@ CATEGORY_MAPS = {
 }
 
 
-class DailySpider(RedisSpider):
+class DailySpider(scrapy.Spider):
     name = 'daily'
     allowed_domains = ['35kushu.com']
     redis_key = "novel:start_ulrs"

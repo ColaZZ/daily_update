@@ -92,7 +92,7 @@ ITEM_PIPELINES = {
 LOG_LEVEL = 'WARNING'
 
 # 过滤器
-SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+# SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 
 # redis 使用的端口和地址
 REDIS_HOST = '47.244.114.115'
