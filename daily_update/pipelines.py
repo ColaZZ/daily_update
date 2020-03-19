@@ -98,6 +98,7 @@ class DailyUpdatePipeline(object):
         sql_chapter = "insert into articles_chapter(article_id, chapter_id, chapter_name, updated_at, chapter_sort) " \
                       "values(%s, %s, %s, %s, %s)"
 
+
         try:
             if article_id != 1:
                 self.cur.execute(sql_chapter, (article_id, chapter_id, chapter_name, updated_at, chapter_sort))
