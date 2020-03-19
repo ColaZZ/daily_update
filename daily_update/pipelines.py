@@ -9,6 +9,7 @@ import os
 import time
 import pymysql
 import redis
+import requests
 
 from .settings import REDIS_HOST, REDIS_PORT, REDIS_DB
 
@@ -58,6 +59,17 @@ class DailyUpdatePipeline(object):
         # 爬虫更新时间
         updated_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
+        # 写入小说缩略图
+        r = requests.get(thumb, stream=True)
+        if r.status_code != 404:
+            thumb_path = "/volume/novel_context" + os.path.sep + "35kushu.com" + os.path.sep + "thumb"
+            img_path = thumb_path + os.path.sep + str(chapter_url_base[:-5]) + ".jpg"
+            with open(img_path, 'wb') as f:
+                for chunk in r.iter_content():
+                    f.write(chunk)
+        else:
+            img_path = ""
+
         # update/insert articles表
         if not self.redis.hexists("articels_h", title):
             sql = "insert into articles(title, pinyin, author, url, category_id, category, is_full, `status`, info, " \
@@ -66,7 +78,7 @@ class DailyUpdatePipeline(object):
                   "updated_at=%s, last_chapter=%s, last_chapter_id =%s, words=%s "
             try:
                 self.cur.execute(sql, (title, int(temp_path), author, url, category_id, category, is_full, status,
-                                       info, thumb, updated_at, last_chapter, lastest_chapter_id, words, updated_at,
+                                       info, img_path, updated_at, last_chapter, lastest_chapter_id, words, updated_at,
                                        last_chapter, lastest_chapter_id, words))
                 self.conn.commit()
                 self.redis.hset("articles_h", title, 1)
@@ -92,9 +104,6 @@ class DailyUpdatePipeline(object):
             #     return
             self.redis.hset("articles_h", title, article_id)
 
-        print(article_id)
-
-        # print(url, article_id)
         sql_chapter = "insert into articles_chapter(article_id, chapter_id, chapter_name, updated_at, chapter_sort) " \
                       "values(%s, %s, %s, %s, %s)"
 
