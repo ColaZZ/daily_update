@@ -114,7 +114,7 @@ class DailySpider(scrapy.Spider):
                                    '| //div[@id="indexmain"]//div[@id="list"]/dl/dd/a/@href ').extract()
         head_list = response.xpath(
             '//head/meta[@property="og:description"]/@content | //head/meta[@property="og:image"]/@content').extract()
-        menu_list_group = [menu_list[i:i + 4] for i in range(0, len(menu_list), 4)]
+        menu_list_group = [menu_list[i:i + 2] for i in range(0, len(menu_list), 2)]
 
         for index, ml in enumerate(menu_list_group):
             chapter_url_base = ml[0]

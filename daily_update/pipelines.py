@@ -89,24 +89,17 @@ class DailyUpdatePipeline(object):
                     print("1", e)
 
         r_title_id = int(self.redis.hget("articles_h", title))
-        # print("rti", r_title_id)
         if r_title_id not in (-1, 0, 1):
             article_id = r_title_id
         else:
-            # start_time = time.time()
-            # print("start_time", start_time)
             sql_id = "select id from articles where url =%s"
             self.cur.execute(sql_id, [url])
             result = self.cur.fetchone()
-            # print(result, type(result))
             article_id = result[0] if result else -1
-            # if not article_id:
-            #     return
             self.redis.hset("articles_h", title, article_id)
 
         sql_chapter = "insert into articles_chapter(article_id, chapter_id, chapter_name, updated_at, chapter_sort) " \
                       "values(%s, %s, %s, %s, %s)"
-
 
         try:
             if article_id != 1:
