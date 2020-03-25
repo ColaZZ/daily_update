@@ -18,7 +18,7 @@ class DailyUpdatePipeline(object):
     def __init__(self):
         # self.conn = pymysql.connect(host='127.0.0.1', user='root',
         #                             passwd='123456', db='distributed_spider', charset='utf8')
-        self.conn = pymysql.connect(host='47.244.114.115', user='root', port=3306,
+        self.conn = pymysql.connect(host='47.56.7.182', user='root', port=3306,
                                     passwd='Fik2mcKWThRbEFyx', db='distributed_spider', charset='utf8')
         self.cur = self.conn.cursor()
         redis_pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB,
