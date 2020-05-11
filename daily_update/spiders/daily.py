@@ -85,7 +85,7 @@ class DailySpider(scrapy.Spider):
 
                 if status == "连载中":
                     is_full = 0
-                elif status == "已完成":
+                elif status == "已完结":
                     is_full = 1
                 else:
                     is_full = 2
