@@ -108,14 +108,14 @@ class DailyUpdatePipeline(object):
         except Exception as e:
             print("2", e)
 
-        # # linux路径 TODO
-        # cur_path = "/volume/novel_context" + os.path.sep + allowed_domain
-        # target_path = cur_path + os.path.sep + str(category_id) + os.path.sep + temp_path
-        # filename_path = cur_path + os.path.sep + str(category_id) + os.path.sep + temp_path + os.path.sep + \
-        #                 str(chapter_url_base[:-5]) + '.txt'
-        #
-        # if not os.path.exists(target_path):
-        #     os.makedirs(target_path)
-        # with open(filename_path, 'w', encoding='utf-8') as f:
-        #     f.write(item['chapter_content'])
+        # linux路径 TODO
+        cur_path = "/volume/novel_context" + os.path.sep + allowed_domain
+        target_path = cur_path + os.path.sep + str(category_id) + os.path.sep + temp_path
+        filename_path = cur_path + os.path.sep + str(category_id) + os.path.sep + temp_path + os.path.sep + \
+                        str(chapter_url_base[:-5]) + '.txt'
+
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+        with open(filename_path, 'w', encoding='utf-8') as f:
+            f.write(item['chapter_content'])
         return item
