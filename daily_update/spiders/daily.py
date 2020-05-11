@@ -27,9 +27,11 @@ CATEGORY_MAPS = {
 
 class DailySpider(scrapy.Spider):
     name = 'daily'
-    allowed_domains = ['35kushu.com']
+
+    # 05.11 更改了域名
+    allowed_domains = ['35zw.com']
     redis_key = "novel:start_ulrs"
-    start_urls = ['https://www.35kushu.com']
+    start_urls = ['https://www.35zw.com/']
 
     # rules = (
     #     Rule(LinkExtractor(allow=r'Items/'), callback='parse_item', follow=True),
