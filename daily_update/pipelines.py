@@ -16,10 +16,10 @@ from .settings import REDIS_HOST, REDIS_PORT, REDIS_DB
 
 class DailyUpdatePipeline(object):
     def __init__(self):
-        self.conn = pymysql.connect(host='127.0.0.1', user='root',
-                                    passwd='123456', db='distributed_spider', charset='utf8')
-        # self.conn = pymysql.connect(host='47.56.7.182', user='root', port=3306,
-        #                             passwd='Fik2mcKWThRbEFyx', db='distributed_spider', charset='utf8')
+        # self.conn = pymysql.connect(host='127.0.0.1', user='root',
+        #                             passwd='123456', db='distributed_spider', charset='utf8')
+        self.conn = pymysql.connect(host='47.56.7.182', user='root', port=3306,
+                                    passwd='Fik2mcKWThRbEFyx', db='distributed_spider', charset='utf8')
         self.cur = self.conn.cursor()
         redis_pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB,
                                           decode_responses=True)  # redis缓存连接池
