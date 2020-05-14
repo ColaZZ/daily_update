@@ -16,18 +16,19 @@ from .settings import REDIS_HOST, REDIS_PORT, REDIS_DB
 
 class DailyUpdatePipeline(object):
     def __init__(self):
-        # self.conn = pymysql.connect(host='127.0.0.1', user='root',
-        #                             passwd='123456', db='distributed_spider', charset='utf8')
-        self.conn = pymysql.connect(host='47.56.7.182', user='root', port=3306,
-                                    passwd='Fik2mcKWThRbEFyx', db='distributed_spider', charset='utf8')
+        self.conn = pymysql.connect(host='127.0.0.1', user='root',
+                                    passwd='123456', db='distributed_spider', charset='utf8')
+        # self.conn = pymysql.connect(host='47.56.7.182', user='root', port=3306,
+        #                             passwd='Fik2mcKWThRbEFyx', db='distributed_spider', charset='utf8')
         self.cur = self.conn.cursor()
         redis_pool = redis.ConnectionPool(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB,
                                           decode_responses=True)  # redis缓存连接池
         self.redis = redis.StrictRedis(connection_pool=redis_pool, decode_responses=True)
 
+
     # 主要处理方法
     def process_item(self, item, spider):
-        # print("item", item)
+        print("item", item)
         title = item.get('article_title', '')
         chapter_url_base = item.get('chapter_url_base', '')
         article_title = item.get('article_title', '')
@@ -42,10 +43,8 @@ class DailyUpdatePipeline(object):
         last_chapter = item.get('last_chapter', ' ')
         chapter_name = item.get('chapter_name', ' ')
         chapter_sort = item.get('chapter_sort', -1)
-
         is_full = item.get('is_full', 2)        # status 判断
         status = item.get('status', '')
-
         allowed_domain = item.get('allowed_domain', '')
         article_url_base = item.get('article_url_base', '')
         lastest_chapter_id = item.get('lastest_chapter_id', '')
@@ -53,9 +52,9 @@ class DailyUpdatePipeline(object):
 
         temp_path_base = str(article_url_base)
         tp_list = temp_path_base.split("/")
-        temp_path = tp_list[1]
-
+        temp_path = tp_list[2]
         chapter_id = int(chapter_url_base[:-5])
+
         # 爬虫更新时间
         updated_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
