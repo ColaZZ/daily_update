@@ -23,7 +23,6 @@ class DailyUpdatePipeline(object):
                                           decode_responses=True)  # redis缓存连接池
         self.redis = redis.StrictRedis(connection_pool=redis_pool, decode_responses=True)
 
-
     # 主要处理方法
     def process_item(self, item, spider):
         # print("item", item)
@@ -106,7 +105,7 @@ class DailyUpdatePipeline(object):
             print("2", e)
 
         # linux路径 TODO
-        cur_path = "/volume/novel_context" + os.path.sep + allowed_domain
+        cur_path = "/home/novel" + os.path.sep + allowed_domain
         target_path = cur_path + os.path.sep + str(category_id) + os.path.sep + temp_path
         filename_path = cur_path + os.path.sep + str(category_id) + os.path.sep + temp_path + os.path.sep + \
                         str(chapter_url_base[:-5]) + '.txt'
