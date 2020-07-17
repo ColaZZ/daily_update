@@ -28,10 +28,9 @@ CATEGORY_MAPS = {
 class DailySpider(scrapy.Spider):
     name = 'daily'
 
-    # 05.11 更改了域名
-    allowed_domains = ['35zw.com']
-    redis_key = "novel:start_ulrs"
-    start_urls = ['https://www.35zw.com/']
+    allowed_domains = ['xkushu.com']
+    redis_key = "novel:start_urls"
+    start_urls = ['https://www.xkushu.com']
 
     # rules = (
     #     Rule(LinkExtractor(allow=r'Items/'), callback='parse_item', follow=True),
@@ -46,14 +45,11 @@ class DailySpider(scrapy.Spider):
 
     def parse(self, response):
         # tags链接
-        # tag_url = response.xpath(
-        #     '//div[@class="menu_list_id lan1"]/li/a/@href | //div[@class="menu_list_id lan1"]/li/a/text()').extract()
-
-        # 35zw.com nav分类
         tag_url = response.xpath(
-            '//div[@class="nav"]/ul/li/a/@href | //div[@class="nav"]/ul/li/a/text()'
-        ).extract()
-        tag_urls = [tag_url[i:i + 2] for i in range(2, len(tag_url) - 4, 2)]
+            '//div[@class="menu_list_id lan1"]/li/a/@href | //div[@class="menu_list_id lan1"]/li/a/text()').extract()
+
+
+        tag_urls = [tag_url[i:i + 2] for i in range(2, len(tag_url), 2)]
 
         # print(tag_urls, len(tag_urls))
         for tu in tag_urls[:8]:
@@ -72,20 +68,20 @@ class DailySpider(scrapy.Spider):
     def parse_tag_detail(self, response):
         # 传入上层meta
         meta_start = response.meta
-        # novel_info_1 = response.xpath('//div[@id="centerl"]/div[@id="content"]/table/tr[not(@align)]')
-        novel_info_1 = response.xpath('//div[@class="fl_right"]/div[@class="tt"]')
+        novel_info_1 = response.xpath('//div[@id="centerl"]/div[@id="content"]/table/tr[not(@align)]')
 
         for ni1 in novel_info_1:
-            article_url = ni1.xpath('h3/a/@href').extract_first(default=' ')
-            article_title = ni1.xpath('h3/a/text()').extract_first(default=' ')
-            author = ni1.xpath('div[@class="pp"]/p[@class="p1"]/a/text()').extract_first(default=' ')[3:]
-            thumb = ni1.xpath('span[@class="pic"]/a/img/@src').extract_first(default=' ')
+            tdd = ni1.xpath('td')
+            article_url = self.start_urls[0] + tdd[0].xpath('a/@href').extract_first(default=' ')
+            article_title = tdd[0].xpath('a/text()').extract_first(default=' ')
+            author = tdd[2].xpath('text()').extract_first(default=" ")
+            # thumb = ni1.xpath('span[@class="pic"]/a/img/@src').extract_first(default=' ')
 
             meta = response.meta
             meta["article_url"] = article_url
             meta["article_title"] = article_title
             meta["author"] = author
-            meta["thumb"] = thumb
+            # meta["thumb"] = thumb
             meta["article_url_base"] = article_url[20:]
 
             yield Request(article_url, meta=meta, callback=self.parse_menu)
@@ -98,8 +94,10 @@ class DailySpider(scrapy.Spider):
         today = time.strftime("%Y-%m-%d", time.localtime())
         update_time = response.xpath('//head/meta[@property="og:novel:update_time"]/@content').extract_()
         if update_time >= today:
-            menu_list = response.xpath('//div[@class="ml_content"]//div[@class="ml_list"]/ul/li/a/@href | '
-                                       '//div[@class="ml_content"]//div[@class="ml_list"]/ul/li/a/text()').extract()
+            menu_list = response.xpath('//div[@id="indexmain"]//div[@id="list"]/dl/dd/a/@title '
+                                       '| //div[@id="indexmain"]//div[@id="list"]/dl/dd/a/@href ').extract()
+            head_list = response.xpath(
+                '//head/meta[@property="og:description"]/@content | //head/meta[@property="og:image"]/@content').extract()
             status = response.xpath('//head/meta[@property="og:novel:status"]/@content').extract_first(default=' ')
             last_chapter_list = response.xpath(
                 '//div[@class="ml_content"]//div[@class="zb"]//div[@class="newest"]//div[@class="last9"]/ul/li/a/@href | '
@@ -114,9 +112,7 @@ class DailySpider(scrapy.Spider):
             else:
                 is_full = 2
 
-            info = response.xpath(
-                '//div[@class="catalog"]/div[@class="catalog1"]/div[@class="introduce"]/p[@class="jj"]/text()').extract_first(
-                default=' ')
+
             menu_list_group = [menu_list[i:i + 2] for i in range(0, len(menu_list), 2)]
             meta = response.meta
             meta["last_chapter"] = last_chapter
@@ -145,16 +141,17 @@ class DailySpider(scrapy.Spider):
                 meta["chapter_url_base"] = chapter_url_base
                 meta["chapter_name"] = chapter_name
                 meta["article_title"] = article_title
-                meta['info'] = info
+                meta['info'] = head_list[0][:511]
                 meta['chapter_sort'] = chapter_sort
                 meta['status'] = status
                 meta['is_full'] = is_full
+                meta['thumb'] = head_list[1]
 
                 yield Request(chapter_url, meta=meta, callback=self.parse_content)
 
     def parse_content(self, response):
-        content = response.xpath('//div[@class="novelcontent"]/p[@class="articlecontent"]/text()').extract()
-        content = "".join(content)
+        content = response.xpath('//div[@id="main"]/div[@id="content"]/text()').extract()
+        content = "<br><br>".join(content[1:])
         words = len(content)
 
         item = DailyUpdateItem()
